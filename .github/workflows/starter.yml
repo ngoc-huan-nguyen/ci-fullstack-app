@@ -1,0 +1,42 @@
+name: Starter workflow
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+  schedule:
+    - cron: '0 0 * * 0' # every sunday midnight
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16, 18]
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Test
+      run: npm run test
+
+    - name: Run linters
+      uses: wearerequired/lint-action@v2
+      with:
+        eslint: true
+        prettier: true
+
+    - name: Print message
+      run: |
+        "Hello [username of the user who initiated the run]. You pushed to [repository_name] at $(date)."
